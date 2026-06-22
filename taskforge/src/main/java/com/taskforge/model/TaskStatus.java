@@ -1,5 +1,11 @@
 package com.taskforge.model;
 
-public class TaskStatus {
-    
+public enum TaskStatus {
+    PENDING,
+    RUNNING,
+    SUCCESS,
+    FAILED,
+    SKIPPED,
+    WAITING_APPROVAL,
+    CANCELLED
 }

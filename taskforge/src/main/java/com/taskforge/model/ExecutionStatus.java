@@ -1,5 +1,10 @@
 package com.taskforge.model;
 
-public class ExecutionStatus {
-    
+public enum ExecutionStatus {
+    CREATED,
+    RUNNING,
+    SUCCESS,
+    FAILED,
+    CANCELLED
 }
+

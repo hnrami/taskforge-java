@@ -6,7 +6,7 @@ This diagram shows the complete state transitions and decision points during a w
 graph TD
     A["1. CREATE WORKFLOW<br/>POST /api/workflows<br/>localhost:8090"] -->|Validate DAG| B["WorkflowDefinition<br/>stored"]
     
-    B -->|Get Workflow ID| C["2. START EXECUTION<br/>POST /api/workflows/{id}/executions<br/>localhost:8090"]
+    B -->|Get Workflow ID| C["2. START EXECUTION<br/>POST /api/workflows/<id>/executions<br/>localhost:8090"]
     
     C -->|Create & Start| D["WorkflowExecution<br/>status: CREATED"]
     
@@ -24,17 +24,17 @@ graph TD
     
     I -->|No| K["Continue to next tasks"]
     
-    J -->|3. APPROVE<br/>POST /api/executions/{id}/approval| L{"Approved?"}
+    J -->|3. APPROVE<br/>POST /api/executions/<id>/approval| L{"Approved?"}
     
     L -->|Yes| M["Task 3: SUCCESS<br/>Continue workflow"]
     
     L -->|No| N["Task 3: FAILED<br/>Downstream: SKIPPED"]
     
-    J -->|4. CANCEL<br/>POST /api/executions/{id}/cancel| O["All tasks: CANCELLED<br/>Workflow: CANCELLED"]
+    J -->|4. CANCEL<br/>POST /api/executions/<id>/cancel| O["All tasks: CANCELLED<br/>Workflow: CANCELLED"]
     
     K -->|Continue| P{"All tasks<br/>terminal?"}
     
-    P -->|Yes| Q["5. CHECK STATUS<br/>GET /api/executions/{id}"]
+    P -->|Yes| Q["5. CHECK STATUS<br/>GET /api/executions/<id>"]
     
     Q -->|View Final State| R["Workflow: SUCCESS<br/>or FAILED<br/>or CANCELLED"]
     

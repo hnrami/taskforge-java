@@ -1,6 +1,6 @@
 1. Create Workflow
 
-POST http://localhost:8080/api/workflows
+POST http://localhost:8090/api/workflows
 Content-Type: application/json
 
 Request Body:
@@ -47,16 +47,16 @@ Request Body:
 }
 
 2. Get Workflow
-GET http://localhost:8080/api/workflows/{workflow-id}
+GET http://localhost:8090/api/workflows/{workflow-id}
 
 3. Start Execution
-POST http://localhost:8080/api/workflows/{workflow-id}/executions
+POST http://localhost:8090/api/workflows/{workflow-id}/executions
 
 4. Check Execution Status
-GET http://localhost:8080/api/executions/{execution-id}
+GET http://localhost:8090/api/executions/{execution-id}
 
 5. Cancel Execution (optional)
-POST http://localhost:8080/api/executions/{execution-id}/cancel
+POST http://localhost:8090/api/executions/{execution-id}/cancel
 Replace {execution-id} with the execution ID. No request body.
 
 6. Approval Workflow (special flow with approval gate)
@@ -92,7 +92,7 @@ After creating and starting, when you check status, manual-approval will show RU
 
 Resolve approval (approve):
 
-POST http://localhost:8080/api/executions/{execution-id}/approval
+POST http://localhost:8090/api/executions/{execution-id}/approval
 Content-Type: application/json
 
 {

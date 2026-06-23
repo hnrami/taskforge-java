@@ -1,12 +1,11 @@
 package com.taskforge.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +21,7 @@ public class JsonMapConverter implements AttributeConverter<Map<String, Object>,
         }
         try {
             return MAPPER.writeValueAsString(attribute);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException("Error converting map to JSON", e);
         }
     }
@@ -34,7 +33,7 @@ public class JsonMapConverter implements AttributeConverter<Map<String, Object>,
         }
         try {
             return MAPPER.readValue(dbData, new TypeReference<Map<String, Object>>() {});
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException("Error converting JSON to map", e);
         }
     }

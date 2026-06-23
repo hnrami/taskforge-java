@@ -1,12 +1,11 @@
 package com.taskforge.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class JsonListConverter implements AttributeConverter<List<String>, Strin
         }
         try {
             return MAPPER.writeValueAsString(attribute);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException("Error converting list to JSON", e);
         }
     }
@@ -34,7 +33,7 @@ public class JsonListConverter implements AttributeConverter<List<String>, Strin
         }
         try {
             return MAPPER.readValue(dbData, new TypeReference<List<String>>() {});
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException("Error converting JSON to list", e);
         }
     }

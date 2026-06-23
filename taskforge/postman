@@ -1,0 +1,124 @@
+1. Create Workflow
+
+POST http://localhost:8080/api/workflows
+Content-Type: application/json
+
+Request Body:
+
+{
+  "name": "deployment-pipeline",
+  "tasks": [
+    {
+      "id": "build",
+      "type": "script",
+      "dependsOn": [],
+      "config": {
+        "command": "mvn clean package"
+      },
+      "retryPolicy": {
+        "attempts": 3,
+        "delaySeconds": 2
+      },
+      "timeoutSeconds": 300
+    },
+    {
+      "id": "test",
+      "type": "script",
+      "dependsOn": ["build"],
+      "config": {
+        "command": "mvn test"
+      },
+      "timeoutSeconds": 300
+    },
+    {
+      "id": "deploy",
+      "type": "http",
+      "dependsOn": ["test"],
+      "config": {
+        "url": "http://localhost:9090/deploy",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer token123"
+        },
+        "body": "{\"version\": \"1.0\"}"
+      }
+    }
+  ]
+}
+
+2. Get Workflow
+GET http://localhost:8080/api/workflows/{workflow-id}
+
+3. Start Execution
+POST http://localhost:8080/api/workflows/{workflow-id}/executions
+
+4. Check Execution Status
+GET http://localhost:8080/api/executions/{execution-id}
+
+5. Cancel Execution (optional)
+POST http://localhost:8080/api/executions/{execution-id}/cancel
+Replace {execution-id} with the execution ID. No request body.
+
+6. Approval Workflow (special flow with approval gate)
+First, create a workflow with an approval task:
+
+
+{
+  "name": "approval-demo",
+  "tasks": [
+    {
+      "id": "build",
+      "type": "notification",
+      "dependsOn": []
+    },
+    {
+      "id": "manual-approval",
+      "type": "approval",
+      "dependsOn": ["build"],
+      "config": {
+        "timeoutMinutes": 5
+      }
+    },
+    {
+      "id": "deploy",
+      "type": "notification",
+      "dependsOn": ["manual-approval"]
+    }
+  ]
+}
+
+
+After creating and starting, when you check status, manual-approval will show RUNNING (blocked on latch).
+
+Resolve approval (approve):
+
+POST http://localhost:8080/api/executions/{execution-id}/approval
+Content-Type: application/json
+
+{
+  "taskId": "manual-approval",
+  "approved": true,
+  "approver": "john.doe@example.com",
+  "reason": "Looks good for production"
+}
+
+Then check status again — deploy should now proceed.
+
+Resolve approval (reject):
+
+{
+  "taskId": "manual-approval",
+  "approved": false,
+  "approver": "security-team@example.com",
+  "reason": "Security review failed"
+}
+
+Test Sequence:
+✅ POST /api/workflows → Create workflow, save ID
+✅ GET /api/workflows/{id} → Verify it was stored
+✅ POST /api/workflows/{id}/executions → Start execution, save execution ID
+✅ GET /api/executions/{id} → Poll until SUCCESS/FAILED
+✅ (Optional) POST /api/executions/{id}/cancel → Test cancellation on a different execution
+✅ (Optional) POST /api/executions/{id}/approval → Test approval flow
+
+mvn spring-boot:run
